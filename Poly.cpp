@@ -5,28 +5,37 @@ using namespace std;
 
 struct Node                             //Структура, являющаяся звеном списка
 {
-    int x,y;                             //Значение x будет передаваться в список
+    double x,y;                             //Значение x будет передаваться в список
     Node* Next, * Prev;                 //Указатели на адреса следующего и предыдущего элементов списка
 };
 
-class List                              //Создаем тип данных Список
+class Poly                              //Создаем тип данных Список
 {
     Node* Head, * Tail;                   //Указатели на адреса начала списка и его конца
     int count = 0;
 public:
-    List() :Head(NULL), Tail(NULL) {};    //Конструктор
-    ~List();                              //Деструктора
+    Poly() :Head(NULL), Tail(NULL) {};    //Конструктор
+    ~Poly();                              //Деструктора
     void ShowBegin();                     //Отображения списка вершин с начала
     void ShowEnd();                       //Отображения списка вершин с конца
-    void PushBegin(int x, int y);         //Добавление элемента в начало
-    void PushBack(int x, int y);          //Добавлении элемента в конец
+    void PushBegin(double x, double y);         //Добавление элемента в начало
+    void PushBack(double x, double y);          //Добавлении элемента в конец
     void DeleteBegin();                   //Удаление элемента с начала
     void DeleteEnd();                     //Удаление элемента с конца
     int GetNumber();                      //Получение количества вершин
     float GetLength();                    //Получение длины линии
+    friend istream& operator>>(istream& in, Poly& p);
+    friend ostream& operator<<(ostream& out, Poly& p);
+    Poly operator=(Poly& p);
+    friend bool operator==(Poly& p1, Poly& p2);
+    friend bool operator!=(Poly& p1, Poly& p2);
+    friend bool operator>(Poly& p1, Poly& p2);
+    friend bool operator>=(Poly& p1, Poly& p2);
+    friend bool operator<(Poly& p1, Poly& p2);
+    friend bool operator<=(Poly& p1, Poly& p2);
 };
 
-List::~List()                           //Деструктор
+Poly::~Poly()                           //Деструктор
 {
     while (Head)                       //Пока по адресу на начало списка что-то есть
     {
@@ -36,7 +45,7 @@ List::~List()                           //Деструктор
     }
 }
 
-void List::PushBegin(int x, int y)
+void Poly::PushBegin(double x, double y)
 {
     Node* temp = new Node;               //Выделение памяти под новый элемент структуры
     temp->Next = NULL;                   //Указываем, что изначально по следующему адресу пусто
@@ -57,7 +66,7 @@ void List::PushBegin(int x, int y)
         count += 1;
     }
 }
-void List::PushBack(int x, int y)
+void Poly::PushBack(double x, double y)
 {
     Node* temp = new Node;               //Выделение памяти под новый элемент структуры
     temp->Next = NULL;                   //Указываем, что изначально по следующему адресу пусто
@@ -79,7 +88,7 @@ void List::PushBack(int x, int y)
     }
 }
 
-void List::DeleteBegin()
+void Poly::DeleteBegin()
 {
     Node* temp = Head;
     Head = Head->Next;
@@ -88,7 +97,7 @@ void List::DeleteBegin()
     count -= 1;
 }
 
-void List::DeleteEnd()
+void Poly::DeleteEnd()
 {
     Node* temp = Tail;
     Tail = Tail->Prev;
@@ -97,12 +106,12 @@ void List::DeleteEnd()
     count -= 1;
 }
 
-int List::GetNumber()
+int Poly::GetNumber()
 {
     return count;
 }
 
-float List::GetLength()
+float Poly::GetLength()
 {
     float Length = 0, line_length;
     int x_temp, y_temp;
@@ -118,7 +127,17 @@ float List::GetLength()
     return Length;
 }
 
-void List::ShowBegin()
+Poly Poly::operator=(Poly& p)
+{
+    Node* temp = p.Head;
+    while (temp != nullptr){
+        PushBack(temp->x, temp->y);
+        temp = temp->Next;
+    }
+    return *this;
+}
+
+void Poly::ShowBegin()
 {
     //ВЫВОДИМ СПИСОК С НАЧАЛА
     Node* temp = Head;                       //Временно указываем на адрес первого элемента
@@ -130,7 +149,7 @@ void List::ShowBegin()
     cout << "\n";
 }
 
-void List::ShowEnd()
+void Poly::ShowEnd()
 {
     //ВЫВОДИМ СПИСОК С КОНЦА
     Node* temp = Tail;                   //Временный указатель на адрес последнего элемента
@@ -143,19 +162,102 @@ void List::ShowEnd()
     cout << "\n";
 }
 
+istream& operator>>(istream& in, Poly& p){
+    int num;
+    double x, y;
+    cout << "Enter number of point you need ==> ";
+    in >> num;
+    while (num) {
+        cout << "X ==> ";
+        in >> x;
+        cout << "Y ==> ";
+        in >> y;
+        cout << endl;
+        p.PushBack(x,y);
+        num--;
+    }
+    return in;
+}
+
+ostream& operator<<(ostream& out, Poly& p)
+{
+    Node* temp = p.Head;
+    int i = 1;
+    while (temp != nullptr) {
+        out << "Point " << i << ": (" << temp->x << "," << temp->y << ");" << endl;
+        i++;
+        temp = temp->Next;
+    }
+    return out;
+}
+
+bool operator==(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() == p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
+bool operator!=(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() != p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
+bool operator>(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() > p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
+bool operator>=(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() >= p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
+bool operator<(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() < p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
+bool operator<=(Poly& p1, Poly& p2)
+{
+    if (p1.GetLength() <= p2.GetLength())
+        return true;
+    else
+        return false;
+}
+
 int main()
 {
     system("CLS");
-    List lst; //Объявляем переменную, тип которой есть список
 
-    lst.PushBegin(1,1);
-    lst.PushBack(2,2);
-    lst.PushBack(2,3);
-    lst.PushBack(5,2);
-
-    lst.ShowBegin(); //Отображаем список на экране
-    cout << lst.GetNumber() << endl;
-
-    cout << lst.GetLength() << endl;
+    Poly p1,p2,p3;
+    cin >> p1;
+    cin >> p2;
+    cin >> p3;
+    double l1, l2, l3;
+    l1 = p1.GetLength();
+    l2 = p2.GetLength();
+    l3 = p3.GetLength();
+    if (l1 > l2 && l1 > l3)
+        cout << p1;
+    if (l2 > l3 && l2 > l1)
+        cout << p2;
+    if (l3 > l1 && l3 > l2)
+        cout << p3;
+    if (l1 == l2 && l2 == l3)
+        cout << "Straight lines are equal!";
     return 0;
 }
